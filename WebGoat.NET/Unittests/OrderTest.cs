@@ -1,66 +1,67 @@
 using System;
-
-//To fix error run these 2
-//dotnet add package Microsoft.EntityFrameworkCore 
-//dotnet add package Microsoft.EntityFrameworkCore.Sqlite
-using Microsoft.EntityFrameworkCore; 
-
-
-
-using System.Data.Common; // For mocking database connections manually
-using Microsoft.Data.Sqlite; // Use an in-memory SQLite database for testing
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebGoatCore.Data;
 using WebGoatCore.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
-public class OrderRepositoryManualTest
+namespace WebGoatCore.Tests
 {
-    public void Test_CreateOrder_PreventsSQLInjection()
+    [TestClass]
+    public class OrderRepositoryTests
     {
-        // Arrange
-        var connection = new SqliteConnection("DataSource=:memory:");
-        connection.Open();
-
-        var options = new DbContextOptionsBuilder<NorthwindContext>()
-            .UseSqlite(connection) // Use SQLite in-memory for testing
-            .Options;
-
-        using (var context = new NorthwindContext(options))
+        private DbContextOptions<NorthwindContext> GetDbContextOptions()
         {
+            return new DbContextOptionsBuilder<NorthwindContext>()
+                .UseSqlite("DataSource=:memory:") // Use in-memory SQLite for testing
+                .Options;
+        }
+
+        [TestMethod]
+        public void CreateOrder_ShouldPreventSqlInjection()
+        {
+            // Arrange
+            var options = GetDbContextOptions();
+            using var context = new NorthwindContext(options);
+            context.Database.OpenConnection();
             context.Database.EnsureCreated();
 
-            var customerRepo = new CustomerRepository(context);
-            var repository = new OrderRepository(context, customerRepo);
-
-            var maliciousOrder = new Order
+            var repository = new OrderRepository(context);
+            var order = new Order
             {
-                CustomerId = "123",
+                CustomerId = "ALFKI",
                 EmployeeId = 1,
                 OrderDate = DateTime.Now,
                 RequiredDate = DateTime.Now.AddDays(7),
                 ShipVia = 1,
-                Freight = 10.0m,
-                ShipName = "', 'Street', 'City', 'Region', '12345', 'Country'); UPDATE Products SET UnitPrice = 0; --",
-                ShipAddress = "Address",
-                ShipCity = "City",
-                ShipRegion = "Region",
+                Freight = 10,
+                ShipName = "SafeShip",
+                ShipAddress = "SafeAddress",
+                ShipCity = "SafeCity",
+                ShipRegion = "SafeRegion",
                 ShipPostalCode = "12345",
-                ShipCountry = "Country"
+                ShipCountry = "SafeCountry"
             };
 
-            try
+            var sqlInjectionAttempts = new[]
             {
-                // Act
-                repository.CreateOrder(maliciousOrder);
+                "'; DROP TABLE Orders; --",
+                "'); UPDATE Products SET UnitPrice = 0; --"
+            };
 
-                // If no exception is thrown, fail the test
-                throw new Exception("SQL Injection vulnerability detected.");
-            }
-            catch (Exception ex)
+            foreach (var injection in sqlInjectionAttempts)
             {
-                // Assert
-                if (!ex.Message.Contains("malicious"))
+                order.ShipCity = injection;
+
+                // Act and Assert
+                try
                 {
-                    throw new Exception("Test failed: The input validation did not correctly prevent SQL injection.");
+                    repository.CreateOrder(order);
+                    Assert.Fail("Expected exception was not thrown due to SQL injection attempt.");
+                }
+                catch (ApplicationException ex)
+                {
+                    StringAssert.Contains(ex.Message, "An error occurred while creating the order");
                 }
             }
         }

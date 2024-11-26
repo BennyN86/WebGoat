@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.Extensions.FileProviders;
 using WebGoatCore.Controllers;
 using WebGoatCore.Exceptions;
 
@@ -27,7 +27,7 @@ namespace WebGoatCore
 
             var dic = new Dictionary<string, string>
             {
-                {Constants.WEBGOAT_ROOT, execDirectory},
+                { Constants.WEBGOAT_ROOT, execDirectory },
             };
             builder.AddInMemoryCollection(dic);
             builder.AddConfiguration(configuration);
@@ -44,11 +44,11 @@ namespace WebGoatCore
         {
             string? entryDir = null;
             string? entryLocation = Assembly.GetEntryAssembly()?.Location;
-            if(!string.IsNullOrEmpty(entryLocation))
+            if (!string.IsNullOrEmpty(entryLocation))
             {
                 entryDir = Path.GetDirectoryName(entryLocation);
             }
-            if(!string.IsNullOrEmpty(entryDir))
+            if (!string.IsNullOrEmpty(entryDir))
             {
                 return entryDir;
             }
@@ -122,6 +122,12 @@ namespace WebGoatCore
             services.AddScoped<SupplierRepository>();
             services.AddScoped<OrderRepository>();
             services.AddScoped<CategoryRepository>();
+
+            services.AddHttpsRedirection(options => // HTTPS redirection options
+            {
+                options.RedirectStatusCode = Microsoft.AspNetCore.Http.StatusCodes.Status301MovedPermanently; // Changes 307 to 301
+                options.HttpsPort = 5001; // Sets HTTPS port to 5001
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -135,6 +141,8 @@ namespace WebGoatCore
                 app.UseExceptionHandler($"/{StatusCodeController.NAME}?code=500");
             }
 
+            app.UseHttpsRedirection(); // Forces HTTPS redirection
+           
             app.UseStatusCodePagesWithRedirects($"/{StatusCodeController.NAME}?code={{0}}");
 
             app.UseStaticFiles();
@@ -153,7 +161,7 @@ namespace WebGoatCore
                     pattern: "{controller=Home}/{action=Index}");
             });
         }
-        
+
         public int startupNotUsed(int a, int b) // Function added to generate same FA Violation
         {
             var c = 1;

@@ -20,7 +20,10 @@ namespace WebGoatCore.Validation
                 return false; // Input exceeds the maximum allowed length.
 
             // Regex pattern to allow only letters, numbers, and selected special characters
-            string pattern = @"^[A-Za-z0-9.,;:!?@#$%^&*()\-_=+/\\|<>\[\]{}~]+$";
+            string pattern = @"^[A-Za-z0-9.,;:!?@#$%^&*()\-_=+/\\|<>\[\]{}~ '""?]+$";
+
+
+
 
             return Regex.IsMatch(input, pattern);
         }

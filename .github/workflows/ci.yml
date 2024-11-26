@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: .NET Build and Test
 
 on:
   push:
@@ -9,23 +9,28 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout the code from the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Set up .NET environment
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0
+        dotnet-version: '7.0' # Use the .NET version of your project
 
-    - name: Restore dependencies
+    # Install dependencies for the solution
+    - name: Install dependencies
       run: dotnet restore
 
-    - name: Build
+    # Build all projects in the solution
+    - name: Build solution
       run: dotnet build --no-restore --configuration Release
 
-    - name: Run Tests
+    # Run tests for all test projects in the solution
+    - name: Run tests
       run: dotnet test --no-build --verbosity normal

@@ -1,6 +1,5 @@
 ﻿using WebGoatCore.Models;
 using WebGoatCore.Data;
-using WebGoatCore.Validation; // Import the InputValidator namespace
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -33,14 +32,6 @@ namespace WebGoatCore.Controllers
         [HttpPost("{entryId}")]
         public IActionResult Reply(int entryId, string contents)
         {
-            // Validate input using InputValidator
-            if (!InputValidator.ValidateInput(contents))
-            {
-                ModelState.AddModelError("Contents", "Invalid input. Please ensure it contains only allowed characters and does not exceed 2400 characters.");
-                var blogEntry = _blogEntryRepository.GetBlogEntry(entryId);
-                return View(blogEntry); // Return to the same view with error messages
-            }
-
             var userName = User?.Identity?.Name ?? "Anonymous";
             var response = new BlogResponse()
             {
@@ -65,5 +56,6 @@ namespace WebGoatCore.Controllers
             var blogEntry = _blogEntryRepository.CreateBlogEntry(title, contents, User!.Identity!.Name!);
             return View(blogEntry);
         }
+
     }
 }

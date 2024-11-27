@@ -24,12 +24,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SQLite" Version="7.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-  </ItemGroup>
+</ItemGroup>
+
 
   <ItemGroup>
     <Content Update="wwwroot\css\site.css">

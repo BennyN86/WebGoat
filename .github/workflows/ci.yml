@@ -1,0 +1,36 @@
+name: .NET Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Set up .NET environment
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0' # Use the .NET version of your project
+
+    # Install dependencies for the solution
+    - name: Install dependencies
+      run: dotnet restore
+
+    # Build all projects in the solution
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+
+    # Run tests for all test projects in the solution
+    - name: Run tests
+      run: dotnet test --no-build --verbosity normal

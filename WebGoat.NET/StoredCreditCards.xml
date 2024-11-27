@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CreditCards />
+<CreditCards>
+  <CreditCard>
+    <Username>Olesen</Username>
+    <Number>4111 1111 1111 1111</Number>
+    <Expiry>01/01/2025 00.00.00</Expiry>
+  </CreditCard>
+<CreditCard><Username>Ben</Username><Number>4111 1111 1111 1111,</Number><Expiry>01/01/2025 00.00.00</Expiry></CreditCard></CreditCards>

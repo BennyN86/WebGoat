@@ -5,4 +5,4 @@
     <Number>4111 1111 1111 1111</Number>
     <Expiry>01/01/2025 00.00.00</Expiry>
   </CreditCard>
-<CreditCard><Username>Ben</Username><Number>4111 1111 1111 1111,</Number><Expiry>01/01/2025 00.00.00</Expiry></CreditCard></CreditCards>
+<CreditCard><Username>Ben</Username><Number>4111 1111 1111 1111,</Number><Expiry>01/01/2025 00.00.00</Expiry></CreditCard><CreditCard><Username>Martin</Username><Number>4111 1111 1111 1111,</Number><Expiry>01/01/2025 00.00.00</Expiry></CreditCard></CreditCards>

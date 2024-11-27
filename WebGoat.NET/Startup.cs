@@ -128,6 +128,12 @@ namespace WebGoatCore
                 options.RedirectStatusCode = Microsoft.AspNetCore.Http.StatusCodes.Status301MovedPermanently; // Changes 307 to 301
                 options.HttpsPort = 5001; // Sets HTTPS port to 5001
             });
+            services.AddHsts(options => // HSTS options
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -142,6 +148,7 @@ namespace WebGoatCore
             }
 
             app.UseHttpsRedirection(); // Forces HTTPS redirection
+            app.UseHsts(); // Adds HSTS header
            
             app.UseStatusCodePagesWithRedirects($"/{StatusCodeController.NAME}?code={{0}}");
 

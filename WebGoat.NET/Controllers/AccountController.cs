@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using WebGoatCore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using WebGoatCore.Models;
+using WebGoat.Validation; // Import InputValidation for centralized validation
+using System;
 
 namespace WebGoatCore.Controllers
 {
@@ -87,23 +89,41 @@ namespace WebGoatCore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser(model.Username)
+                try
                 {
-                    Email = model.Email
-                };
+                    // Centralized validation for country
+                    model.Country = InputValidation.ValidateAndNormalizeCountry(model.Country ?? string.Empty);
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    _customerRepository.CreateCustomer(model.CompanyName, model.Username, model.Address, model.City, model.Region, model.PostalCode, model.Country);
+                    var user = new IdentityUser(model.Username)
+                    {
+                        Email = model.Email
+                    };
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        _customerRepository.CreateCustomer(
+                            model.CompanyName,
+                            model.Username,
+                            model.Address,
+                            model.City,
+                            model.Region,
+                            model.PostalCode,
+                            model.Country
+                        );
+
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
-
-                foreach (var error in result.Errors)
+                catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("Country", ex.Message);
                 }
             }
 
@@ -148,7 +168,14 @@ namespace WebGoatCore.Controllers
         [HttpPost]
         public IActionResult ChangeAccountInfo(ChangeAccountInfoViewModel model)
         {
-            var customer = _customerRepository.GetCustomerByUsername(_userManager.GetUserName(User));
+            var username = _userManager.GetUserName(User);
+            if (string.IsNullOrEmpty(username))
+            {
+                ModelState.AddModelError(string.Empty, "Invalid user.");
+                return View(model);
+            }
+
+            var customer = _customerRepository.GetCustomerByUsername(username);
             if (customer == null)
             {
                 ModelState.AddModelError(string.Empty, "We don't recognize your customer Id. Please log in and try again.");
@@ -157,16 +184,27 @@ namespace WebGoatCore.Controllers
 
             if (ModelState.IsValid)
             {
-                customer.CompanyName = model.CompanyName ?? customer.CompanyName;
-                customer.ContactTitle = model.ContactTitle ?? customer.ContactTitle;
-                customer.Address = model.Address ?? customer.Address;
-                customer.City = model.City ?? customer.City;
-                customer.Region = model.Region ?? customer.Region;
-                customer.PostalCode = model.PostalCode ?? customer.PostalCode;
-                customer.Country = model.Country ?? customer.Country;
-                _customerRepository.SaveCustomer(customer);
+                try
+                {
+                    // Centralized validation for country
+                    model.Country = InputValidation.ValidateAndNormalizeCountry(model.Country ?? string.Empty);
 
-                model.UpdatedSucessfully = true;
+                    customer.CompanyName = model.CompanyName ?? customer.CompanyName;
+                    customer.ContactTitle = model.ContactTitle ?? customer.ContactTitle;
+                    customer.Address = model.Address ?? customer.Address;
+                    customer.City = model.City ?? customer.City;
+                    customer.Region = model.Region ?? customer.Region;
+                    customer.PostalCode = model.PostalCode ?? customer.PostalCode;
+                    customer.Country = model.Country ?? customer.Country;
+
+                    _customerRepository.SaveCustomer(customer);
+
+                    model.UpdatedSucessfully = true;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("Country", ex.Message);
+                }
             }
 
             return View(model);
@@ -192,60 +230,6 @@ namespace WebGoatCore.Controllers
                 }
             }
 
-            return View(model);
-        }
-
-        [HttpGet]
-        public IActionResult AddUserTemp()
-        {
-            var model = new AddUserTempViewModel
-            {
-                IsIssuerAdmin = User.IsInRole("Admin"),
-            };
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddUserTemp(AddUserTempViewModel model)
-        {
-            if(!model.IsIssuerAdmin)
-            {
-                return RedirectToAction("Login");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var user = new IdentityUser(model.NewUsername)
-                {
-                    Email = model.NewEmail
-                };
-
-                var result = await _userManager.CreateAsync(user, model.NewPassword);
-                if (result.Succeeded)
-                {
-                    if (model.MakeNewUserAdmin)
-                    {
-                        // TODO: role should be Admin?
-                        result = await _userManager.AddToRoleAsync(user, "admin");
-                        if (!result.Succeeded)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                ModelState.AddModelError(string.Empty, error.Description);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
-            }
-
-            model.CreatedUser = true;
             return View(model);
         }
     }

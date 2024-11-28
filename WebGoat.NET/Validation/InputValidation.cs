@@ -1,11 +1,16 @@
 using System;
 using System.Text.RegularExpressions;
-// Dette er den nye version, med opdateret Domæne-primitiv for Country.
+
 namespace WebGoat.Validation
 {
     public static class InputValidation
     {
-        // Function to validate and normalize a country name
+        /// <summary>
+        /// Validates and normalizes a country name input.
+        /// </summary>
+        /// <param name="countryName">The input country name to validate.</param>
+        /// <returns>The validated and normalized country name.</returns>
+        /// <exception cref="ArgumentException">Thrown when the country name fails validation.</exception>
         public static string ValidateAndNormalizeCountry(string countryName)
         {
             // Check for null or whitespace
@@ -37,21 +42,34 @@ namespace WebGoat.Validation
             }
 
             // Normalize capitalization (e.g., "united states" -> "United States")
-            countryName = NormalizeCapitalization(countryName);
-
-            // Return the validated and normalized country name
-            return countryName;
+            return NormalizeCapitalization(countryName);
         }
 
-        // Helper function to normalize capitalization
+        /// <summary>
+        /// Normalizes the capitalization of a country name.
+        /// </summary>
+        /// <param name="countryName">The country name to normalize.</param>
+        /// <returns>The country name with each word capitalized.</returns>
         private static string NormalizeCapitalization(string countryName)
         {
             string[] words = countryName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < words.Length; i++)
             {
-                words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
+                if (!string.IsNullOrWhiteSpace(words[i]))
+                {
+                    words[i] = char.ToUpper(words[i][0]) + (words[i].Length > 1 ? words[i].Substring(1).ToLower() : "");
+                }
             }
             return string.Join(' ', words);
+        }
+
+        /// <summary>
+        /// Adds any future validation logic for other input fields.
+        /// </summary>
+        public static bool ValidateInput(string input)
+        {
+            // Placeholder for other input validations
+            throw new NotImplementedException();
         }
     }
 }

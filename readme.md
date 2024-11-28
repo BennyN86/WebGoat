@@ -6,7 +6,7 @@ Datadefenders er:
 - Niels Peter Frederiksen - npfr49165@edu.ucl.dk
 - Benny Nielsen – bbni49212@edu.ucl.dk
 
-Dette projekt er en fork af vores undervisers projekt WebGoat: https://github.com/mesn1985/WebGoat.   Vores arbejde med at forbedre projektet er dokumenteret i rapporten "xxxxxxx.pdf", som kan findes i dette repository
+Dette projekt er en fork af vores undervisers projekt WebGoat: https://github.com/mesn1985/WebGoat.   Vores arbejde med at forbedre projektet er dokumenteret i rapporten "Sikkerhed i WebGoat.NET.pdf", som kan findes i dette repository
 
 ---
 
@@ -18,7 +18,14 @@ Hvordan kan vi øge sikkerheden i webapplikationen WebGoat?
 
 ### Abstract / Resumé
 
-Indsæt klog tekst her
+Formålet med projektet var at identificere, evaluere og afhjælpe sårbarheder gennem anvendelse af risikostyring, trusselsmodellering og automatiserede værktøjer som CodeQL, SNYK og Dependabot.
+Analysen identificerede kritiske sårbarheder som SQL-injektion, cross-site scripting (XSS) og usikre tredjepartsafhængigheder. 
+
+For at mitigere disse blev der implementeret løsninger som HTTPS-kryptering, HSTS, parametriserede inputs og stærk inputvalidering via domæne primitiver og invarians.  Implementeringen blev valideret gennem unit testing og en CI/CD-pipeline, hvilket sikrede kontinuerlig kvalitet og stabilitet.
+Projektet demonstrerer, hvordan strukturerede metoder og moderne sikkerhedsprincipper som "Secure By Design" kan anvendes til at styrke sikkerheden i webapplikationer.   
+
+På trods af projektets begrænsninger har resultaterne bidraget til en væsentlig forbedring af WebGoats sikkerhedsniveau og lagt fundamentet for yderligere udvikling og vedligeholdelse.
+
 
 ---
 

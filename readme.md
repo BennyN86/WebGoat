@@ -1,13 +1,39 @@
-# WebGoat
-# This is a copy of the excellent project https://github.com/tobyash86/WebGoat.NET. This copy is purely used for educational purposes.
-# For the full documentation, please read the documentation in the original repository.
+# DataDefenders WebGoat Analyse
+Velkommen til vores semesterprojekt i faget Software Sikkerhed på uddannelsen IT-sikkerhed ved UCL Seebladsgade i Odense. 
 
-## Requirements
-The project requires `.NET 8.0 SDK`
+Datadefenders er:  
+- John Kiærbye Lange - jkla40320@edu.ucl.dk
+- Niels Peter Frederiksen - npfr49165@edu.ucl.dk
+- Benny Nielsen – bbni49212@edu.ucl.dk
 
-## Start the application
-Excute `dotnet run` command within the `WebGoat.NET` project folder
+Dette projekt er en fork af vores undervisers projekt WebGoat: https://github.com/mesn1985/WebGoat.   Vores arbejde med at forbedre projektet er dokumenteret i rapporten "xxxxxxx.pdf", som kan findes i dette repository
 
-## Reset database
-The database used is persisted in the file `NORTHWND.sqlite`. To reset the database, simply replace the 
-file with the one from this repository.
+---
+
+### Problemformulering: 
+
+Hvordan kan vi øge sikkerheden i webapplikationen WebGoat?
+
+---
+
+### Abstract / Resumé
+
+Indsæt klog tekst her
+
+---
+
+
+### Systemkrav
+Projektet kræver `.NET 8.0 SDK`
+
+---
+
+### Start applikationen
+Kør kommandoen `dotnet run` i mappen for projektet `WebGoat.NET`.
+
+---
+
+### Nulstil database
+Databasen, der bruges, gemmes i filen NORTHWND.sqlite. For at nulstille databasen skal du blot erstatte filen, med den fra dette repository.
+
+---

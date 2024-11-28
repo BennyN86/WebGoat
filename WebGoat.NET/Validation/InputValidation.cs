@@ -1,4 +1,5 @@
 using System;
+using System;
 using System.Text.RegularExpressions;
 
 namespace WebGoat.Validation
@@ -18,29 +19,24 @@ namespace WebGoat.Validation
             {
                 throw new ArgumentException("Country name cannot be null or empty.");
             }
-
             // Trim leading and trailing spaces
             countryName = countryName.Trim();
-
             // Recheck for empty input after trimming
             if (countryName.Length == 0)
             {
                 throw new ArgumentException("Country name cannot be empty or only spaces.");
             }
-
             // Check length constraints
             if (countryName.Length < 2 || countryName.Length > 60)
             {
                 throw new ArgumentException("Country name must be between 2 and 60 characters long.");
             }
-
             // Check allowed characters: A-Z (any casing) and spaces
             string pattern = @"^[A-Za-z\s]+$";
             if (!Regex.IsMatch(countryName, pattern))
             {
                 throw new ArgumentException("Country name can only contain letters and spaces.");
             }
-
             // Normalize capitalization (ensure the first letter of each word is uppercase)
             return NormalizeCapitalization(countryName);
         }

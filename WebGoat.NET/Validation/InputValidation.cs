@@ -34,22 +34,22 @@ namespace WebGoat.Validation
                 throw new ArgumentException("Country name must be between 2 and 60 characters long.");
             }
 
-            // Check allowed characters: A-Z (case insensitive) and spaces
+            // Check allowed characters: A-Z (any casing) and spaces
             string pattern = @"^[A-Za-z\s]+$";
             if (!Regex.IsMatch(countryName, pattern))
             {
                 throw new ArgumentException("Country name can only contain letters and spaces.");
             }
 
-            // Normalize capitalization (e.g., "united states" -> "United States")
+            // Normalize capitalization (ensure the first letter of each word is uppercase)
             return NormalizeCapitalization(countryName);
         }
 
         /// <summary>
-        /// Normalizes the capitalization of a country name.
+        /// Normalizes the capitalization of a country name, ensuring the first letter of each word is uppercase.
         /// </summary>
         /// <param name="countryName">The country name to normalize.</param>
-        /// <returns>The country name with each word capitalized.</returns>
+        /// <returns>The country name with the first letter of each word capitalized.</returns>
         private static string NormalizeCapitalization(string countryName)
         {
             string[] words = countryName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -57,7 +57,7 @@ namespace WebGoat.Validation
             {
                 if (!string.IsNullOrWhiteSpace(words[i]))
                 {
-                    words[i] = char.ToUpper(words[i][0]) + (words[i].Length > 1 ? words[i].Substring(1).ToLower() : "");
+                    words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1);
                 }
             }
             return string.Join(' ', words);
